@@ -709,11 +709,11 @@ class PRNet(nn.Module):
             total_cycle_consistency_loss = total_cycle_consistency_loss + cycle_consistency_loss * batch_size
             total_scale_consensus_loss = total_scale_consensus_loss + scale_consensus_loss * batch_size
 
-            rotations_ab.append(rotation_ab.detach().cpu().numpy())
-            translations_ab.append(translation_ab.detach().cpu().numpy())
-            rotations_ab_pred.append(rotation_ab_pred.detach().cpu().numpy())
-            translations_ab_pred.append(translation_ab_pred.detach().cpu().numpy())
-            eulers_ab.append(euler_ab.cpu().numpy())
+            rotations_ab.append(rotation_ab.detach().cuda().numpy())
+            translations_ab.append(translation_ab.detach().cuda().numpy())
+            rotations_ab_pred.append(rotation_ab_pred.detach().cuda().numpy())
+            translations_ab_pred.append(translation_ab_pred.detach().cuda().numpy())
+            eulers_ab.append(euler_ab.cuda().numpy())
         avg_loss = total_loss / num_examples
         avg_feature_alignment_loss = total_feature_alignment_loss / num_examples
         avg_cycle_consistency_loss = total_cycle_consistency_loss / num_examples
@@ -775,11 +775,11 @@ class PRNet(nn.Module):
             total_cycle_consistency_loss = total_cycle_consistency_loss + cycle_consistency_loss * batch_size
             total_scale_consensus_loss = total_scale_consensus_loss + scale_consensus_loss * batch_size
 
-            rotations_ab.append(rotation_ab.detach().cpu().numpy())
-            translations_ab.append(translation_ab.detach().cpu().numpy())
-            rotations_ab_pred.append(rotation_ab_pred.detach().cpu().numpy())
-            translations_ab_pred.append(translation_ab_pred.detach().cpu().numpy())
-            eulers_ab.append(euler_ab.cpu().numpy())
+            rotations_ab.append(rotation_ab.detach().cuda().numpy())
+            translations_ab.append(translation_ab.detach().cuda().numpy())
+            rotations_ab_pred.append(rotation_ab_pred.detach().cuda().numpy())
+            translations_ab_pred.append(translation_ab_pred.detach().cuda().numpy())
+            eulers_ab.append(euler_ab.cuda().numpy())
         avg_loss = total_loss / num_examples
         avg_feature_alignment_loss = total_feature_alignment_loss / num_examples
         avg_cycle_consistency_loss = total_cycle_consistency_loss / num_examples
