@@ -449,7 +449,7 @@ class SVDHead(nn.Module):
 
         src_corr_centered = src_corr - src_corr.mean(dim=2, keepdim=True)
 
-        H = torch.matmul(src_centered, src_corr_centered.transpose(2, 1).contiguous()).cpu()
+        H = torch.matmul(src_centered, src_corr_centered.transpose(2, 1).contiguous()).cuda()
 
         R = []
 
