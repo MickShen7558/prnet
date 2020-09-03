@@ -65,7 +65,7 @@ def get_graph_feature(x, k=20):
     # x = x.squeeze()
     x = x.view(*x.size()[:3])
     idx = knn(x, k=k)  # (batch_size, num_points, k)
-    assert idx.shape == torch.Size([3,768,k]), idx.shape
+    # assert idx.shape == torch.Size([3,768,k]), idx.shape
     batch_size, num_points, _ = idx.size()
     device = torch.device('cuda' if torch.cuda.is_available() else "cpu")
 
