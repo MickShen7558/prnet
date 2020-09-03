@@ -156,7 +156,10 @@ def main():
         raise Exception("not implemented")
 
     if args.model == 'prnet':
-        net = PRNet(args).cuda()
+        if torch.cuda.is_available():
+            net = PRNet(args).cuda()
+        else:
+            net = PRNet(args).cpu()
         if args.eval:
             if args.model_path is '':
                 model_path = 'checkpoints' + '/' + args.exp_name + '/models/model.best.t7'

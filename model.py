@@ -54,8 +54,9 @@ def get_graph_feature(x, k=20):
     # x = x.squeeze()
     x = x.view(*x.size()[:3])
     idx = knn(x, k=k)  # (batch_size, num_points, k)
+    assert idx.shape[2] == k
     batch_size, num_points, _ = idx.size()
-    device = torch.device('cuda')
+    device = torch.device('cuda' if torch.cuda.is_available() else "cpu")
 
     idx_base = torch.arange(0, batch_size, device=device).view(-1, 1, 1) * num_points
 
@@ -463,7 +464,10 @@ class SVDHead(nn.Module):
             r = torch.matmul(torch.matmul(v, diag), u.transpose(1, 0)).contiguous()
             R.append(r)
 
-        R = torch.stack(R, dim=0).cuda()
+        if torch.cuda.is_available():
+            R = torch.stack(R, dim=0).cuda()
+        else:
+            R = torch.stack(R, dim=0).cpu()
 
         t = torch.matmul(-R, src.mean(dim=2, keepdim=True)) + src_corr.mean(dim=2, keepdim=True)
         if self.training:
@@ -697,7 +701,11 @@ class PRNet(nn.Module):
         total_cycle_consistency_loss = 0.0
         total_scale_consensus_loss = 0.0
         for data in tqdm(train_loader):
-            src, tgt, rotation_ab, translation_ab, rotation_ba, translation_ba, euler_ab, euler_ba = [d.cuda()
+            if torch.cuda.is_available():
+                src, tgt, rotation_ab, translation_ab, rotation_ba, translation_ba, euler_ab, euler_ba = [d.cuda()
+                                                                                                          for d in data]
+            else:
+                src, tgt, rotation_ab, translation_ab, rotation_ba, translation_ba, euler_ab, euler_ba = [d.cpu()
                                                                                                       for d in data]
             loss, feature_alignment_loss, cycle_consistency_loss, scale_consensus_loss,\
             rotation_ab_pred, translation_ab_pred = self._train_one_batch(src, tgt, rotation_ab, translation_ab,
@@ -764,7 +772,11 @@ class PRNet(nn.Module):
         total_cycle_consistency_loss = 0.0
         total_scale_consensus_loss = 0.0
         for data in tqdm(test_loader):
-            src, tgt, rotation_ab, translation_ab, rotation_ba, translation_ba, euler_ab, euler_ba = [d.cuda()
+            if torch.cuda.is_available():
+                src, tgt, rotation_ab, translation_ab, rotation_ba, translation_ba, euler_ab, euler_ba = [d.cuda()
+                                                                                                      for d in data]
+            else:
+                src, tgt, rotation_ab, translation_ab, rotation_ba, translation_ba, euler_ab, euler_ba = [d.cpu()
                                                                                                       for d in data]
             loss, feature_alignment_loss, cycle_consistency_loss, scale_consensus_loss, \
             rotation_ab_pred, translation_ab_pred = self._test_one_batch(src, tgt, rotation_ab, translation_ab)
