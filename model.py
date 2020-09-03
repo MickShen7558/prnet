@@ -46,15 +46,26 @@ def knn(x, k):
     xx = torch.sum(x ** 2, dim=1, keepdim=True)
     distance = -xx - inner - xx.transpose(2, 1).contiguous()
 
-    idx = distance.topk(k=k, dim=-1)[1]  # (batch_size, num_points, k)
-    return idx
+    # idx = distance.topk(k=k, dim=-1)[1]  # (batch_size, num_points, k)
+    # return idx
+
+    d_sorted, d_index = torch.sort(distance, dim=-1, descending=True)
+    d_i, d_j, d_k = d_sorted.shape
+    if d_k > k:
+        d_sorted_top = d_sorted[:,:,:20]
+        d_index_top = d_index[:,:,:20]
+    else:
+        d_sorted_top = d_sorted[:,:,:d_k]
+        d_index_top = d_index[:,:,:d_k]
+
+    return d_index_top
 
 
 def get_graph_feature(x, k=20):
     # x = x.squeeze()
     x = x.view(*x.size()[:3])
     idx = knn(x, k=k)  # (batch_size, num_points, k)
-    assert idx.shape[2] == k
+    assert idx.shape == torch.Size([3,768,k]), idx.shape
     batch_size, num_points, _ = idx.size()
     device = torch.device('cuda' if torch.cuda.is_available() else "cpu")
 
