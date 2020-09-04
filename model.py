@@ -18,6 +18,24 @@ from sklearn.metrics import r2_score
 from util import transform_point_cloud, npmat2euler, quat2mat
 
 
+def myTopk(input, k, dim, sorted=True):
+    d_sorted, d_index = torch.sort(input, dim=dim, descending=True)
+    d_i, d_j, d_k = d_sorted.shape
+    if d_k > k:
+        d_sorted_top = d_sorted[:, :, :k]
+        d_index_top = d_index[:, :, :k]
+        d_k = k
+    else:
+        d_sorted_top = d_sorted[:, :, :d_k]
+        d_index_top = d_index[:, :, :d_k]
+
+    if sorted:
+        return (d_sorted_top, d_index_top)
+    else:
+        rd = torch.rand(d_i, d_j, d_k)
+        # d_sorted_top = torch.gather(d_sorted_top, -1, )
+
+
 def clones(module, N):
     return nn.ModuleList([copy.deepcopy(module) for _ in range(N)])
 
@@ -506,6 +524,7 @@ class KeyPointNet(nn.Module):
         src_embedding_idx = src_topk_idx.repeat(1, num_dims, 1)
         tgt_embedding_idx = tgt_topk_idx.repeat(1, num_dims, 1)
 
+        assert src.shape[2] < src_topk_idx.max(2), "{}, {}".format(src.shape[2], src_topk_idx.max(2))
         src_keypoints = torch.gather(src, dim=2, index=src_keypoints_idx)
         tgt_keypoints = torch.gather(tgt, dim=2, index=tgt_keypoints_idx)
         
