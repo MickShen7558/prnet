@@ -524,7 +524,7 @@ class KeyPointNet(nn.Module):
         src_embedding_idx = src_topk_idx.repeat(1, num_dims, 1)
         tgt_embedding_idx = tgt_topk_idx.repeat(1, num_dims, 1)
 
-        print(src_topk_idx.max(2)[1].max().item())
+        # print(src_topk_idx.max(2)[1].max().item())
         assert src.shape[2] > src_topk_idx.max(2)[1].max().item(), "{}, {}".format(src.shape[2], src_topk_idx.max(2)[1])
         src_keypoints = torch.gather(src, dim=2, index=src_keypoints_idx)
         tgt_keypoints = torch.gather(tgt, dim=2, index=tgt_keypoints_idx)
